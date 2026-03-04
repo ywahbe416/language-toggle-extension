@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Language Toggle</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <p class="eyebrow">Page Language Toggle</p>
+      <h1>Translate This Page</h1>
+
+      <label class="toggle-row" for="enabledToggle">
+        <span>Enable translation</span>
+        <span class="switch">
+          <input type="checkbox" id="enabledToggle" />
+          <span class="slider"></span>
+        </span>
+      </label>
+
+      <label for="languageSelect">Language</label>
+      <select id="languageSelect">
+        <option value="fr">French 🇫🇷</option>
+        <option value="es">Spanish 🇪🇸</option>
+        <option value="it">Italian 🇮🇹</option>
+      </select>
+
+      <p id="statusText" class="status" aria-live="polite"></p>
+    </main>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

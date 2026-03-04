@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Page Language Toggle",
+  "description": "Translate the current page to a selected language and toggle back to the original.",
+  "version": "1.0.0",
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Page Language Toggle",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
