@@ -2,17 +2,48 @@ const STORAGE_KEY = "page-language-toggle-state";
 const DEFAULT_LANG = "fr";
 const SUPPORTED_LANGS = new Set(["fr", "es", "it"]);
 
+function parseHttpUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function isGoogleDomain(hostname) {
+  return hostname === "google.com" || hostname.endsWith(".google.com") || /^google\.[a-z.]+$/i.test(hostname);
+}
+
+function isTranslateProxyHost(hostname) {
+  return hostname === "translate.goog" || hostname.endsWith(".translate.goog");
+}
+
 function isTranslatableUrl(url) {
-  return Boolean(url) && !url.startsWith("chrome://") && !url.startsWith("edge://") && !url.startsWith("about:") && !url.startsWith("chrome-extension://") && !url.startsWith("view-source:");
+  const parsed = parseHttpUrl(url);
+  if (!parsed) {
+    return false;
+  }
+
+  const host = parsed.hostname.toLowerCase();
+  if (isGoogleDomain(host) || isTranslateProxyHost(host)) {
+    return false;
+  }
+
+  return true;
 }
 
 function isGoogleTranslateUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return parsed.hostname === "translate.google.com" && parsed.pathname.startsWith("/translate");
-  } catch {
+  const parsed = parseHttpUrl(url);
+  if (!parsed) {
     return false;
   }
+
+  const host = parsed.hostname.toLowerCase();
+  return (host === "translate.google.com" && parsed.pathname.startsWith("/translate")) || isTranslateProxyHost(host);
 }
 
 function buildTranslateUrl(originalUrl, targetLang) {
@@ -77,7 +108,7 @@ async function setTranslation(tabId, enabled, targetLang) {
   const currentUrl = tab.url || "";
 
   if (!isTranslatableUrl(currentUrl) && !isGoogleTranslateUrl(currentUrl)) {
-    return { ok: false, error: "This page type cannot be translated." };
+    return { ok: false, error: "This page cannot be translated (Google/Chrome pages are blocked)." };
   }
 
   const allState = await readState();
